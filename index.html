@@ -20,15 +20,10 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-<script>
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+
+  <script>
+// Your Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDbRSZ4eyTcl7gn-f5jMBLuplvafMxr8y4",
   authDomain: "brethingsynchronizer.firebaseapp.com",
@@ -39,36 +34,41 @@ const firebaseConfig = {
   measurementId: "G-HWGG5M0LX7"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+// Initialize Firebase (compat style)
+firebase.initializeApp(firebaseConfig);
+// Optional: firebase.analytics();  ← remove or keep if you really need it
 
-  // ===== 3. Listen for timer updates =====
-  db.ref('breathingTimer').on('value', (snapshot) => {
-    const startTime = snapshot.val();
-    if (startTime) {
-      updateCounter(startTime);
-    } else {
-      counter.textContent = "0";
-    }
-  });
+const db = firebase.database();
 
-  // ===== 4. When button is clicked, start timer =====
-  button.addEventListener('click', () => {
-    const now = Date.now();
-    db.ref('breathingTimer').set(now); // Write start time to Firebase
-  });
+const counter = document.getElementById('counter');
+const button = document.getElementById('startBtn');
 
-  // ===== 5. Update the counter based on shared start time =====
-  let intervalId;
-  function updateCounter(startTime) {
-    if (intervalId) clearInterval(intervalId);
-    intervalId = setInterval(() => {
-      const elapsed = Math.floor((Date.now() - startTime) / 1000); // seconds
-      const count = elapsed % 4 + 1; // cycle 1-4
-      counter.textContent = count;
-    }, 100); // update every 0.1s for smoothness
+// Listen for timer updates from Firebase
+db.ref('breathingTimer').on('value', (snapshot) => {
+  const startTime = snapshot.val();
+  if (startTime) {
+    updateCounter(startTime);
+  } else {
+    counter.textContent = "0";
   }
+});
+
+// When button is clicked, broadcast the start time
+button.addEventListener('click', () => {
+  const now = Date.now();
+  db.ref('breathingTimer').set(now);
+});
+
+// Update the breathing counter (1 → 2 → 3 → 4 → 1 → ...)
+let intervalId;
+function updateCounter(startTime) {
+  if (intervalId) clearInterval(intervalId);
+  intervalId = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - startTime) / 1000); // seconds
+    const count = (elapsed % 4) + 1; // 1,2,3,4 cycle
+    counter.textContent = count;
+  }, 100); // smooth updates
+}
 </script>
 
 </body>

@@ -55,8 +55,14 @@ db.ref('breathingTimer').on('value', (snapshot) => {
 
 // When button is clicked, broadcast the start time
 button.addEventListener('click', () => {
+  button.disabled = true;
+  button.textContent = "Started";
   const now = Date.now();
   db.ref('breathingTimer').set(now);
+  setTimeout(() => {
+    button.disabled = false;
+    button.textContent = "Start Breathing";
+  }, 4000); // re-enable after one cycle
 });
 
 // Update the breathing counter (1 → 2 → 3 → 4 → 1 → ...)

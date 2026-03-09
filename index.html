@@ -1,13 +1,57 @@
-
-
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>My Page</title>
+    <meta charset="UTF-8">
+    <title>Synchronized Breathing</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 100px;
+            background-color: #f0f8ff;
+        }
+        #counter {
+            font-size: 80px;
+            margin: 50px 0;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 24px;
+            cursor: pointer;
+            border: none;
+            border-radius: 10px;
+            background-color: #4CAF50;
+            color: white;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
-    <h1>Hello from GitHub!</h1>
-    <p>This is written directly on the website.</p>
+    <h1>Synchronized Breathing</h1>
+    <div id="counter">0</div>
+    <button id="startBtn">Start Breathing</button>
+
+    <script>
+        const counter = document.getElementById('counter');
+        const button = document.getElementById('startBtn');
+
+        button.addEventListener('click', () => {
+            let num = 1;
+            counter.textContent = num;
+            button.disabled = true; // disable button while counting
+
+            const interval = setInterval(() => {
+                num++;
+                counter.textContent = num;
+                if (num > 4) { // stop at 4 seconds
+                    clearInterval(interval);
+                    counter.textContent = "Done!";
+                    button.disabled = false; // re-enable button
+                }
+            }, 1000); // 1000ms = 1 second
+        });
+    </script>
 </body>
 </html>
